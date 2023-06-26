@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6.0;net7.0</TargetFrameworks>
+    <Authors>MACK Mathieu</Authors>
+    <Company>MACK Mathieu</Company>
+    <Description>Helper library that let you generate Word document based on markdown files.</Description>
+    <PackageTags>devops;docx;markdown</PackageTags>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <ProjectGuid>{D3F625A4-B577-4B40-A2B7-084FF8CAC924}</ProjectGuid>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <LangVersion>preview</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Copyright>Copyright (c) MACK Mathieu</Copyright>
+    <PackageProjectUrl>https://github.com/mathieumack/MarkdownToDocxGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mathieumack/MarkdownToDocxGenerator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Markdig" Version="0.27.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+		<PackageReference Include="OpenXMLSDK.Engine" Version="2022.10310.0-preview-21" />
+	</ItemGroup>
+</Project>
