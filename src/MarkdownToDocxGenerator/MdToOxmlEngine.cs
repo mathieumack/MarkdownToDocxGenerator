@@ -31,9 +31,22 @@ namespace MarkdownToDocxGenerator
         /// <summary>
         /// Read a markdown file and transform it to a DocumentModel
         /// </summary>
-        /// <param name="markdownContentFile">Full file path t the markdown file</param>
+        /// <param name="markdownContentFilePath">Full file path to the markdown file</param>
         /// <param name="rootFolder">Full folder path that contains all images (and references from the markdown)</param>
-        public Report Transform(string markdownContentFile, 
+        public Report TransformByFile(string markdownContentFilePath,
+                                        string rootFolder)
+        {
+            var fileContent = File.ReadAllText(markdownContentFilePath);
+
+            return Transform(fileContent, rootFolder);
+        }
+
+        /// <summary>
+        /// Read a markdown file and transform it to a DocumentModel
+        /// </summary>
+        /// <param name="markdownContent">Full file path t the markdown file</param>
+        /// <param name="rootFolder">Full folder path that contains all images (and references from the markdown)</param>
+        public Report Transform(string fileContent, 
                                 string rootFolder)
         {
             this.rootFolder = rootFolder;
@@ -43,8 +56,6 @@ namespace MarkdownToDocxGenerator
                 ContextModel = new ContextModel(),
                 AddPageBreak = true
             };
-
-            var fileContent = File.ReadAllText(markdownContentFile);
 
             var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
             var mdDocument = Markdown.Parse(fileContent, pipeline);
