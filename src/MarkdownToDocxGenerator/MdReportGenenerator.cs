@@ -68,16 +68,14 @@ namespace MarkdownToDocxGenerator
 
 
         /// <summary>
-        /// Read some markdown files and transform it to a DocumentModel
+        /// Read some markdown files and transform it to a DocumentModel Returs a stream to the generated file
         /// </summary>
-        /// <param name="outputPath">Full folder path that contains all images (and references from the markdown)</param>
         /// <param name="markdownFilesContent">A list of markdown files</param>
-        /// <param name="templatePath">Dotx template file path. Optional</param>
+        /// <param name="templateDoument">Dotx template file path. Optional</param>
         /// <param name="preHook">Action executed on the word document before integrate the md files. Optional</param>
         /// <param name="preHook">Action executed on the word document after integrate the md files. Optional</param>
-        public void Transform(string outputPath,
-                                List<string> markdownFilesContent,
-                                string templatePath = null,
+        public Stream Transform(List<string> markdownFilesContent,
+                                Stream templateDoument = null,
                                 Action<WordManager> preHook = null,
                                 Action<WordManager> postHook = null)
         {
@@ -94,8 +92,8 @@ namespace MarkdownToDocxGenerator
 
             using (var word = new WordManager())
             {
-                if (!string.IsNullOrWhiteSpace(templatePath))
-                    word.OpenDocFromTemplate(templatePath, outputPath, true);
+                if (templateDoument is null || templateDoument == Stream.Null)
+                    word.OpenDoc(templateDoument, true);
 
                 // Pre hook :
                 preHook?.Invoke(word);
@@ -107,7 +105,8 @@ namespace MarkdownToDocxGenerator
                 postHook?.Invoke(word);
 
                 word.SaveDoc();
-                word.CloseDoc();
+
+                return word.GetMemoryStream();
             }
         }
     }
