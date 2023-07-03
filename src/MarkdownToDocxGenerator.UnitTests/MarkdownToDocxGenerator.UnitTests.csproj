@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -20,16 +20,14 @@
     <ProjectReference Include="..\MarkdownToDocxGenerator\MarkdownToDocxGenerator.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-	<Folder Include="Dotx\*" />
-	<Content Include="Dotx\**">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-    <Folder Include="MdFiles\*"  />
-	<Content Include="MdFiles\**">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-  </ItemGroup>
-
-	
+	<ItemGroup>
+		<Folder Include="Dotx\*" />
+		<Content Include="Dotx\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Folder Include="MdFiles\*"  />
+		<Content Include="MdFiles\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

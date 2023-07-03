@@ -71,13 +71,13 @@ namespace MarkdownToDocxGenerator
         /// Read some markdown files and transform it to a DocumentModel Returs a stream to the generated file
         /// </summary>
         /// <param name="markdownFilesContent">A list of markdown files</param>
-        /// <param name="templateDoument">Dotx template file path. Optional</param>
+        /// <param name="templateDocument">Dotx template file path. Optional</param>
         /// <param name="preHook">Action executed on the word document before integrate the md files. Optional</param>
         /// <param name="preHook">Action executed on the word document after integrate the md files. Optional</param>
-        public Stream Transform(List<string> markdownFilesContent,
-                                Stream templateDoument = null,
-                                Action<WordManager> preHook = null,
-                                Action<WordManager> postHook = null)
+        public Stream TransformWithStream(List<string> markdownFilesContent,
+                                            Stream templateDocument = null,
+                                            Action<WordManager> preHook = null,
+                                            Action<WordManager> postHook = null)
         {
             // Launch transformation :
             var reports = new List<Report>();
@@ -92,8 +92,8 @@ namespace MarkdownToDocxGenerator
 
             using (var word = new WordManager())
             {
-                if (templateDoument is null || templateDoument == Stream.Null)
-                    word.OpenDoc(templateDoument, true);
+                if (templateDocument != null && templateDocument != Stream.Null)
+                    word.OpenDocFromTemplate(templateDocument);
 
                 // Pre hook :
                 preHook?.Invoke(word);

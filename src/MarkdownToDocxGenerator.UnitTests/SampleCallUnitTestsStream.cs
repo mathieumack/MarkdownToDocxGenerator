@@ -5,14 +5,14 @@ using MarkdownToDocxGenerator.Extensions;
 namespace MarkdownToDocxGenerator.UnitTests
 {
     [TestClass]
-    public class SampleCallUnitTests
+    public class SampleCallUnitTestsStream
     {
         /// <summary>
         /// The goal of this unit test is just to ensure that the wode does not g�n�rate exception.
         /// You can use it as it in order to test the library with your own data.
         /// </summary>
         [TestMethod]
-        public void Transform()
+        public void TransformWithStream()
         {
             // Configuration of sample data :
             var rootFolder = Path.Combine(Environment.CurrentDirectory, "MdFiles");
@@ -29,7 +29,10 @@ namespace MarkdownToDocxGenerator.UnitTests
             var parser = serviceProvider.GetRequiredService<MdReportGenenerator>();
 
             // Generate Word document :
-            parser.Transform(outputPath, rootFolder, templatePath);
+            using var templateStream = File.OpenRead(templatePath);
+            var markdownContent = File.ReadAllText(Path.Combine(rootFolder, "0.md"));
+
+            parser.TransformWithStream(new List<string>() { markdownContent }, templateStream);
         }
     }
 }
