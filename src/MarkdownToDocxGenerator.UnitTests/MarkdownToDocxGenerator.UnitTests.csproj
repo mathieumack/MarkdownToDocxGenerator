@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Dotx\sample.dotx" />
+    <None Remove="MdFiles\0.md" />
+    <None Remove="MdFiles\1.md" />
+    <None Remove="MdFiles\images\sampleimagefromdalle.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
@@ -17,17 +24,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Dotx\sample.dotx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MdFiles\0.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MdFiles\1.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MdFiles\images\sampleimagefromdalle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MarkdownToDocxGenerator\MarkdownToDocxGenerator.csproj" />
   </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Dotx\*" />
-		<Content Include="Dotx\**">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Folder Include="MdFiles\*"  />
-		<Content Include="MdFiles\**">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
 </Project>

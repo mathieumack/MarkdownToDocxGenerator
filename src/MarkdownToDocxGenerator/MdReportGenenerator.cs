@@ -105,6 +105,7 @@ namespace MarkdownToDocxGenerator
                 postHook?.Invoke(word);
 
                 word.SaveDoc();
+                word.CloseDoc();
 
                 return word.GetMemoryStream();
             }
