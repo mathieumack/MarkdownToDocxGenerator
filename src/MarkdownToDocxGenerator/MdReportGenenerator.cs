@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OpenXMLSDK.Engine.Word;
 using OpenXMLSDK.Engine.Word.ReportEngine;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -20,23 +21,26 @@ namespace MarkdownToDocxGenerator
         }
 
         /// <summary>
-        /// Read a markdown file and transform it to a DocumentModel
+        /// Read some markdown files and transform it to a DocumentModel
         /// </summary>
         /// <param name="outputPath">Full folder path that contains all images (and references from the markdown)</param>
         /// <param name="rootFolder">Full folder path that contains all images (and references from the markdown)</param>
-        /// <param name="templatePath">Dotx template file path. Can be optional</param>
+        /// <param name="templatePath">Dotx template file path. Optional</param>
+        /// <param name="preHook">Action executed on the word document before integrate the md files. Optional</param>
+        /// <param name="preHook">Action executed on the word document after integrate the md files. Optional</param>
         public void Transform(string outputPath,
                                 string rootFolder,
-                                string templatePath = null)
+                                string templatePath = null,
+                                Action<WordManager> preHook = null,
+                                Action<WordManager> postHook = null)
         {
-            // Launch transformation :
             var reports = new List<Report>();
 
             foreach (var filePath in Directory.GetFiles(rootFolder))
             {
                 if (filePath.EndsWith(".md"))
                 {
-                    var report = parser.Transform(filePath, rootFolder);
+                    var report = parser.TransformByFile(filePath, rootFolder);
                     reports.Add(report);
                 }
             }
@@ -48,17 +52,62 @@ namespace MarkdownToDocxGenerator
                 if(!string.IsNullOrWhiteSpace(templatePath))
                     word.OpenDocFromTemplate(templatePath, outputPath, true);
 
-                // Fill context :
-                //word.SetTextOnBookmark("version", version);
-                //word.SetTextOnBookmark("creationDate", DateTime.Now.ToString("g", culture));
-                //var projectFullName = $"{projectName} - {projectIndex}";
-                //for (int i = 0; i < 10; i++)
-                //    word.SetTextOnBookmark($"projectName{i}", projectFullName);
+                // Pre hook :
+                preHook?.Invoke(word);
+                
+                // Append documentation :
+                word.AppendSubDocument(reports, true, culture);
+
+                // Post hook :
+                postHook?.Invoke(word);
+
+                word.SaveDoc();
+                word.CloseDoc();
+            }
+        }
+
+
+        /// <summary>
+        /// Read some markdown files and transform it to a DocumentModel Returs a stream to the generated file
+        /// </summary>
+        /// <param name="markdownFilesContent">A list of markdown files</param>
+        /// <param name="templateDocument">Dotx template file path. Optional</param>
+        /// <param name="preHook">Action executed on the word document before integrate the md files. Optional</param>
+        /// <param name="preHook">Action executed on the word document after integrate the md files. Optional</param>
+        public Stream TransformWithStream(List<string> markdownFilesContent,
+                                            Stream templateDocument = null,
+                                            Action<WordManager> preHook = null,
+                                            Action<WordManager> postHook = null)
+        {
+            // Launch transformation :
+            var reports = new List<Report>();
+
+            foreach (var fileContent in markdownFilesContent)
+            {
+                var report = parser.Transform(fileContent, "");
+                reports.Add(report);
+            }
+
+            var culture = new CultureInfo("en-US");
+
+            using (var word = new WordManager())
+            {
+                if (templateDocument != null && templateDocument != Stream.Null)
+                    word.OpenDocFromTemplate(templateDocument);
+
+                // Pre hook :
+                preHook?.Invoke(word);
 
                 // Append documentation :
                 word.AppendSubDocument(reports, true, culture);
+
+                // Post hook :
+                postHook?.Invoke(word);
+
                 word.SaveDoc();
                 word.CloseDoc();
+
+                return word.GetMemoryStream();
             }
         }
     }

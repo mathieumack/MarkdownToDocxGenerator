@@ -12,7 +12,7 @@ namespace MarkdownToDocxGenerator.UnitTests
         /// You can use it as it in order to test the library with your own data.
         /// </summary>
         [TestMethod]
-        public void TestMethod1()
+        public void Transform()
         {
             // Configuration of sample data :
             var rootFolder = Path.Combine(Environment.CurrentDirectory, "MdFiles");

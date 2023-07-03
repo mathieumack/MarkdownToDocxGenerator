@@ -9,7 +9,7 @@ namespace MarkdownToDocxGenerator.Extensions
         /// </summary>
         /// <param name="sevices"></param>
         /// <param name="asSingleton">True = Register as singleton. False = Register as Transiant</param>
-        public static void RegisterMarkdownToDocxGenerator(this ServiceCollection? sevices, bool asSingleton)
+        public static void RegisterMarkdownToDocxGenerator(this IServiceCollection sevices, bool asSingleton)
         {
             if (asSingleton)
             {
