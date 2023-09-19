@@ -14,65 +14,14 @@ on:
           type: boolean
 
 jobs:
-  build:
-    name: "CI : Build, Test and publish"
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2    
-    # Show informations :
-    - name: Show github context github ref
-      run: echo ${{ github.ref }}
-    - name: Show github context github head_ref
-      run: echo ${{ github.head_ref }}
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: |
-          6.0.x
-          7.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: src
-    # Generate package version :
-    - name: Generate package version
-      id: generateVersionStep
-      shell: pwsh
-      run: |
-        $version = .\generateVersion.ps1 -query ${{ secrets.NUGETPACKAGEIDENTIFIER }}
-        echo "::set-output name=BUILD_VERSION::$version"
-      working-directory: .github/workflows/scripts
-    - name: Generate package version prefix
-      id: generateVersionPrefixStep
-      shell: pwsh
-      run: |
-        if('${{ github.ref }}' -eq 'refs/heads/main') { echo "::set-output name=BUILD_VERSION_PREFIX::" }
-        else { echo "::set-output name=BUILD_VERSION_PREFIX::-preview-${{ github.run_number }}" }
-    # Build solution (and package nuget) 
-    - name: Begin Sonar scan
-      run: |
-        dotnet tool install --global dotnet-sonarscanner
-        dotnet sonarscanner begin /k:${{ secrets.SONAR_ORG_KEY }}_AzureDevOps.RestAPI.NetSDK.Helper /o:mathieumack /d:sonar.login=${{ secrets.SONAR_TOKEN }} /d:sonar.host.url=https://sonarcloud.io /d:sonar.cs.opencover.reportsPaths="sonarqubecoverage.opencover.xml"
-      working-directory: src
-    - name: Build and analyze
-      shell: pwsh
-      run: |
-        dotnet build --configuration Release --no-restore -p:FileVersion=${{ steps.generateVersionStep.outputs.BUILD_VERSION }} /p:Version=${{ steps.generateVersionStep.outputs.BUILD_VERSION }}${{ steps.generateVersionPrefixStep.outputs.BUILD_VERSION_PREFIX }}
-      working-directory: src
-    #- name: Launch unit tests
-    #  run: dotnet test --configuration Release --no-build --verbosity normal /p:CollectCoverage=true  /p:CoverletOutputFormat=opencover --collect:"Code Coverage" /p:CoverletOutput="../sonarqubecoverage"
-    #  working-directory: src
-    - name: End Sonar scan
-      run: dotnet sonarscanner end /d:sonar.login=${{ secrets.SONAR_TOKEN }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      working-directory: src
-    - uses: actions/upload-artifact@v3
-      with:
-        name: nuget-artifact
-        path: src/**/*.nupkg
-    # Publish a new version only for new features :
-    - name: Push Package to NuGet.org
-      if: startswith(github.ref,'refs/heads/feature') || startswith(github.head_ref,'feature/') || inputs.publishToNuget
-      run: dotnet nuget push **.nupkg -k ${{ secrets.NUGETAPIKEY }} -s https://api.nuget.org/v3/index.json
-      working-directory: src
+  dotnet:
+    uses: mathieumack/MyGithubActions/.github/workflows/dotnetlib.yml@main
+    with:
+      publishToNuget: false
+    secrets:
+      NUGETPACKAGEIDENTIFIER: ${{ secrets.NUGETPACKAGEIDENTIFIER }}
+      SONAR_ORGANIZATION_CODE: ${{ secrets.SONAR_ORGANIZATION_CODE }}
+      SONAR_PROJECT_CODE: ${{ secrets.SONAR_PROJECT_CODE }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      NUGETAPIKEY: ${{ secrets.NUGETAPIKEY }}
+      
