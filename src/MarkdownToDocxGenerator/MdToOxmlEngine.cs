@@ -13,6 +13,7 @@ using OpenXMLSDK.Engine.Word.Tables.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Table = OpenXMLSDK.Engine.Word.ReportEngine.Models.Table;
 
 namespace MarkdownToDocxGenerator
@@ -511,12 +512,40 @@ namespace MarkdownToDocxGenerator
                 if (!File.Exists(imagePath))
                     return null;
 
+                // Try to get image width and height from tag :
+                int? width = null;
+                int? height = null;
+                if (containerBlock.NextSibling is HtmlInline)
+                {
+                    var tag = (containerBlock.NextSibling as HtmlInline).Tag;
+                    var regex = "(?<wd>width=[0-9]+)|(?<hg>height=[0-9]+)";
+                    // Try to extract witdth and height if exists :
+                    MatchCollection matches = Regex.Matches(tag, regex);
+
+                    foreach (Match match in matches)
+                    {
+                        if (match.Groups["wd"].Success)
+                        {
+                            width = int.Parse(match.Groups["wd"].Value.Replace("width=", ""));
+                        }
+                        if (match.Groups["hg"].Success)
+                        {
+                            height = int.Parse(match.Groups["hg"].Value.Replace("height=", ""));
+                        }
+                    }
+                }
                 var image = new Image()
                 {
                     Path = imagePath,
                     MaxWidth = 600,
                     ImagePartType = OpenXMLSDK.Engine.Packaging.ImagePartType.Png
                 };
+
+                if (width.HasValue)
+                    image.Width = width.Value;
+                if (height.HasValue)
+                    image.Height = height.Value;
+                    
                 return image;
             }
             else
