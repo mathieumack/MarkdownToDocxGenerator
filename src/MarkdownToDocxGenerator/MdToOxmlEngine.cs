@@ -10,6 +10,7 @@ using OpenXMLSDK.Engine.Word.ReportEngine.Models;
 using OpenXMLSDK.Engine.Word.ReportEngine.Models.ExtendedModels;
 using OpenXMLSDK.Engine.Word.Tables;
 using OpenXMLSDK.Engine.Word.Tables.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -121,6 +122,18 @@ namespace MarkdownToDocxGenerator
                     var table = GetTable(mdtable);
                     currentPage.ChildElements.Add(table);
                 }
+                else if (blockType == typeof(QuoteBlock))
+                {
+                    var mdQuote = (QuoteBlock)block;
+                    var table = GetTable(mdQuote);
+                    currentPage.ChildElements.Add(table);
+                }
+                else if (blockType == typeof(CodeBlock))
+                {
+                    var mdQuote = (CodeBlock)block;
+                    var codeBlockDescription = GetCodeBlock(mdQuote);
+                    currentPage.ChildElements.AddRange(codeBlockDescription);
+                }
                 else
                 {
                     logger.LogInformation($"Block {blockType.FullName} unknow. I don't know how to transform it");
@@ -138,6 +151,33 @@ namespace MarkdownToDocxGenerator
         private string GetTitleStyle(int level)
         {
             return $"Titre{level}";
+        }
+
+        private List<BaseElement> GetCodeBlock(CodeBlock block)
+        {
+            var result = new List<BaseElement>();
+
+            var paragraph = new Paragraph()
+            {
+                SpacingAfter = 20,
+                SpacingBefore = 20,
+                ChildElements = new List<BaseElement>()
+            };
+
+            foreach (var line in block.Lines)
+            {
+                var breakLineLabel = new Label()
+                {
+                    Text = "    " + block.Inline,
+                    FontSize = "20",
+                    SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve
+                };
+                paragraph.ChildElements.Add(breakLineLabel);
+            }
+
+            result.Add(paragraph);
+
+            return result;
         }
 
         private List<BaseElement> GetListBlock(ListBlock block)
@@ -176,8 +216,8 @@ namespace MarkdownToDocxGenerator
             {
                 var paragraph = new Paragraph()
                 {
-                    SpacingAfter = 0,
-                    SpacingBefore = 0,
+                    SpacingAfter = 20,
+                    SpacingBefore = 20,
                     Shading = "EAEAEA",
                     ChildElements = new List<BaseElement>()
                     {
@@ -211,6 +251,8 @@ namespace MarkdownToDocxGenerator
                     {
                         paragraph = new Paragraph()
                         {
+                            SpacingAfter = 20,
+                            SpacingBefore = 20,
                             ChildElements = new List<BaseElement>()
                         };
                         result.Add(paragraph);
@@ -224,6 +266,8 @@ namespace MarkdownToDocxGenerator
                     {
                         paragraph = new Paragraph()
                         {
+                            SpacingAfter = 20,
+                            SpacingBefore = 20,
                             ChildElements = new List<BaseElement>()
                         };
                         result.Add(paragraph);
@@ -231,8 +275,18 @@ namespace MarkdownToDocxGenerator
                     var mdEmphasisInline = (EmphasisInline)inlineBlock;
                     foreach (var subBlock in mdEmphasisInline)
                     {
-                        var label = GetLiteralInlineText((LiteralInline)subBlock, mdEmphasisInline.DelimiterChar == '*' && mdEmphasisInline.DelimiterCount == 2);
-                        paragraph.ChildElements.Add(label);
+                        if (subBlock is CodeInline)
+                        {
+                            var label = GetCodeInlineText((CodeInline)subBlock, mdEmphasisInline.DelimiterChar == '*' && mdEmphasisInline.DelimiterCount == 2);
+                            paragraph.ChildElements.Add(label);
+                        }
+                        else if (subBlock is LiteralInline)
+                        {
+                            var label = GetLiteralInlineText((LiteralInline)subBlock, mdEmphasisInline.DelimiterChar == '*' && mdEmphasisInline.DelimiterCount == 2);
+                            paragraph.ChildElements.Add(label);
+                        }
+                        else
+                            logger.LogInformation($"EmphasisInline subblock {subBlock.GetType().Name} unknow. I don't know how to transform it");
                     }
                 }
                 else if (blockType == typeof(LinkInline))
@@ -241,6 +295,8 @@ namespace MarkdownToDocxGenerator
                     {
                         paragraph = new Paragraph()
                         {
+                            SpacingAfter = 20,
+                            SpacingBefore = 20,
                             ChildElements = new List<BaseElement>()
                         };
                         result.Add(paragraph);
@@ -256,6 +312,8 @@ namespace MarkdownToDocxGenerator
                     {
                         paragraph = new Paragraph()
                         {
+                            SpacingAfter = 20,
+                            SpacingBefore = 20,
                             ChildElements = new List<BaseElement>()
                         };
                         result.Add(paragraph);
@@ -276,11 +334,102 @@ namespace MarkdownToDocxGenerator
                     result.Add(table);
                     paragraph = null;
                 }
+                else if (blockType == typeof(CodeInline))
+                {
+                    if (paragraph is null)
+                    {
+                        paragraph = new Paragraph()
+                        {
+                            SpacingAfter = 20,
+                            SpacingBefore = 20,
+                            ChildElements = new List<BaseElement>()
+                        };
+                        result.Add(paragraph);
+                    }
+
+                    var block = inlineBlock as CodeInline;
+                    var breakLineLabel = new Label()
+                    {
+                        Text = block.Content,
+                        FontSize = "20",
+                        FontColor = "A72525",
+                        SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve
+                    };
+                    paragraph.ChildElements.Add(breakLineLabel);
+                }
                 else
                 {
                     logger.LogInformation($"ContainerInline {blockType} unknow. I don't know how to transform it");
                 }
             }
+
+            return result;
+        }
+
+        private List<BaseElement> GetQuoteBlocklineText(QuoteBlock containerBlock, string labelPrefix = "")
+        {
+            var result = new List<BaseElement>();
+
+            var mdParagraph = containerBlock.LastChild as ParagraphBlock;
+
+            if (mdParagraph != null)
+            {
+                var elements = GetContainerInlineText(mdParagraph.Inline);
+                return elements;
+            }
+
+            return result;
+        }
+
+        private Table GetTable(QuoteBlock block)
+        {
+            var elements = GetQuoteBlocklineText(block);
+
+            var tableCells = new List<int>() { 5 , 4995 };
+
+            var result = new Table()
+            {
+                TableWidth = new TableWidthModel() { Width = "5000", Type = TableWidthUnitValues.Pct },
+                ColsWidth = tableCells.ToArray(),
+                Borders = new BorderModel()
+                {
+                    BorderPositions = BorderPositions.TOP | BorderPositions.BOTTOM | BorderPositions.RIGHT,
+                    BorderColor = "7A7A7A",
+                    BorderWidth = 1
+                },
+                Rows = new List<Row>()
+                {
+                    new Row
+                    {
+                        Cells = new List<Cell>()
+                        {
+                            new Cell
+                            {
+                                Shading = "7A7A7A",
+                                ChildElements = new List<BaseElement>()
+                                {
+                                    new Paragraph()
+                                    {
+                                        ChildElements = new List<BaseElement>()
+                                        {
+                                            new Label()
+                                            {
+                                                Text = " ",
+                                                SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            new Cell
+                            {
+                                Margin = new MarginModel { Left = 100, Right = 100, Top = 25, Bottom = 25 },
+                                ChildElements = elements
+                            }
+                        }
+                    }
+                }
+            };
 
             return result;
         }
@@ -431,6 +580,8 @@ namespace MarkdownToDocxGenerator
                             ChildElements = new List<BaseElement>() {
                                 new Paragraph()
                                 {
+                                    SpacingAfter = 20,
+                                    SpacingBefore = 20,
                                     ChildElements = new List<BaseElement>()
                                     {
                                         new Label()
@@ -488,6 +639,45 @@ namespace MarkdownToDocxGenerator
             return cells;
         }
 
+        private Label GetCodeInlineText(CodeInline containerBlock,
+                                            bool isBold = false,
+                                            string labelPrefix = "")
+        {
+            var result = new Label()
+            {
+                Text = labelPrefix + containerBlock.Content.ToString(),
+                FontSize = "20",
+                SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve,
+                Bold = isBold
+            };
+
+            // Try to get image width and height from tag :
+            string color = "";
+            bool fontBold = false;
+            if (containerBlock.NextSibling is HtmlInline)
+            {
+                var tag = (containerBlock.NextSibling as HtmlInline).Tag;
+                var regex = "(color=(?<fc>[a-zA-Z0-9]+))|(bold=(?<fb>[truefalse]+))";
+                // Try to extract witdth and height if exists :
+                MatchCollection matches = Regex.Matches(tag, regex);
+
+                foreach (Match match in matches)
+                {
+                    if (match.Groups["fc"].Success)
+                        color = match.Groups["fc"].Value;
+                    if (match.Groups["fb"].Success)
+                        bool.TryParse(match.Groups["fb"].Value, out fontBold);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(color))
+                result.FontColor = color;
+            if (fontBold)
+                result.Bold = isBold || fontBold;
+
+            return result;
+        }
+
         private Label GetLiteralInlineText(LiteralInline containerBlock,
                                             bool isBold = false,
                                             string labelPrefix = "")
@@ -499,6 +689,30 @@ namespace MarkdownToDocxGenerator
                 SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve,
                 Bold = isBold
             };
+
+            // Try to get image width and height from tag :
+            string color = "";
+            bool fontBold = false;
+            if (containerBlock.NextSibling is HtmlInline)
+            {
+                var tag = (containerBlock.NextSibling as HtmlInline).Tag;
+                var regex = "(color=(?<fc>[a-zA-Z0-9]+))|(bold=(?<fb>[truefalse]+))";
+                // Try to extract witdth and height if exists :
+                MatchCollection matches = Regex.Matches(tag, regex);
+
+                foreach (Match match in matches)
+                {
+                    if (match.Groups["fc"].Success)
+                        color = match.Groups["fc"].Value;
+                    if (match.Groups["fb"].Success)
+                        bool.TryParse(match.Groups["fb"].Value, out fontBold);
+                }
+            }
+
+            if(!string.IsNullOrWhiteSpace(color))
+                result.FontColor = color;
+            if (fontBold)
+                result.Bold = isBold || fontBold;
 
             return result;
         }
@@ -518,20 +732,15 @@ namespace MarkdownToDocxGenerator
                 if (containerBlock.NextSibling is HtmlInline)
                 {
                     var tag = (containerBlock.NextSibling as HtmlInline).Tag;
-                    var regex = "(?<wd>width=[0-9]+)|(?<hg>height=[0-9]+)";
-                    // Try to extract witdth and height if exists :
-                    MatchCollection matches = Regex.Matches(tag, regex);
+                    var regex = "(width=(?<wd>[0-9]+))|(height=(?<hg>[0-9]+))";
 
-                    foreach (Match match in matches)
+                    Match match = Regex.Match(tag, regex);
+                    if (match.Success)
                     {
-                        if (match.Groups["wd"].Success)
-                        {
-                            width = int.Parse(match.Groups["wd"].Value.Replace("width=", ""));
-                        }
+                        if(match.Groups["wd"].Success)
+                            width = int.Parse(match.Groups["wd"].Value);
                         if (match.Groups["hg"].Success)
-                        {
-                            height = int.Parse(match.Groups["hg"].Value.Replace("height=", ""));
-                        }
+                            height = int.Parse(match.Groups["hg"].Value);
                     }
                 }
                 var image = new Image()
@@ -542,35 +751,59 @@ namespace MarkdownToDocxGenerator
                 };
 
                 if (width.HasValue)
-                    image.Width = width.Value;
+                    image.MaxWidth = width.Value;
                 if (height.HasValue)
-                    image.Height = height.Value;
+                    image.MaxHeight = height.Value;
                     
                 return image;
             }
             else
             {
-                var hyperlink = new Hyperlink()
+                BaseElement result = null;
+                if(containerBlock.Url.StartsWith("http"))
                 {
-                    WebSiteUri = containerBlock.Url,
-                    ChildElements = new List<BaseElement>()
-                };
-
-                if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
-                {
-                    var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
-                    label.Underline = new UnderlineModel
+                    // Web uri :
+                    var hyperlink = new Hyperlink()
                     {
-                        Color = "40A6DB",
-                        Val = UnderlineValues.Single
+                        WebSiteUri = containerBlock.Url,
+                        ChildElements = new List<BaseElement>()
                     };
-                    hyperlink.Text = label;
+
+                    if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
+                    {
+                        var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
+                        label.Underline = new UnderlineModel
+                        {
+                            Color = "40A6DB",
+                            Val = UnderlineValues.Single
+                        };
+                        hyperlink.Text = label;
+                        result = hyperlink;
+                    }
+                    else
+                    {
+                        logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                    }
                 }
                 else
                 {
-                    logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                    // Local link :
+                    if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
+                    {
+                        var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
+                        label.Underline = new UnderlineModel
+                        {
+                            Color = "40A6DB",
+                            Val = UnderlineValues.Single
+                        };
+                        result = label;
+                    }
+                    else
+                    {
+                        logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                    }
                 }
-                return hyperlink;
+                return result;
             }
         }
     }
