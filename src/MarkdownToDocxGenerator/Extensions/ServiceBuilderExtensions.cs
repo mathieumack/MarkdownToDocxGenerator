@@ -1,26 +1,25 @@
 ﻿using Microsoft.Extensions.DependencyInjection; 
 
-namespace MarkdownToDocxGenerator.Extensions
+namespace MarkdownToDocxGenerator.Extensions;
+
+public static class ServiceBuilderExtensions
 {
-    public static class ServiceBuilderExtensions
+    /// <summary>
+    /// Register all dedicated services in the service collection.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="asSingleton">True = Register as singleton. False = Register as Transiant</param>
+    public static void RegisterMarkdownToDocxGenerator(this IServiceCollection services, bool asSingleton)
     {
-        /// <summary>
-        /// Register all dedicated services in the service collection.
-        /// </summary>
-        /// <param name="sevices"></param>
-        /// <param name="asSingleton">True = Register as singleton. False = Register as Transiant</param>
-        public static void RegisterMarkdownToDocxGenerator(this IServiceCollection sevices, bool asSingleton)
+        if (asSingleton)
         {
-            if (asSingleton)
-            {
-                sevices.AddSingleton<MdToOxmlEngine>();
-                sevices.AddSingleton<MdReportGenenerator>();
-            }
-            else
-            {
-                sevices.AddTransient<MdToOxmlEngine>();
-                sevices.AddTransient<MdReportGenenerator>();
-            }
+            services.AddSingleton<MdToOxmlEngine>();
+            services.AddSingleton<MdReportGenenerator>();
+        }
+        else
+        {
+            services.AddTransient<MdToOxmlEngine>();
+            services.AddTransient<MdReportGenenerator>();
         }
     }
 }
