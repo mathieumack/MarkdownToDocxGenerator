@@ -20,7 +20,7 @@ jobs:
       publishToNuget: false
     secrets:
       NUGETPACKAGEIDENTIFIER: ${{ secrets.NUGETPACKAGEIDENTIFIER }}
-      SONAR_ORGANIZATION_CODE: ${{ secrets.SONAR_ORGANIZATION_CODE }}
-      SONAR_PROJECT_CODE: ${{ secrets.SONAR_PROJECT_CODE }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #  SONAR_ORGANIZATION_CODE: ${{ secrets.SONAR_ORGANIZATION_CODE }}
+    #  SONAR_PROJECT_CODE: ${{ secrets.SONAR_PROJECT_CODE }}
+    #  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       NUGETAPIKEY: ${{ secrets.NUGETAPIKEY }}
