@@ -31,13 +31,13 @@ if (arguments.Length != 7)
 var rootFolder = arguments[1];
 if (!Directory.Exists(rootFolder))
 {
-    logger.LogWarning("Document folder does not exists");
+    logger.LogWarning($"Document folder {rootFolder} does not exists");
     return 0;
 }
 var templatePath = arguments[2];
 if (!File.Exists(templatePath))
 {
-    logger.LogWarning("Template file does not exists");
+    logger.LogWarning($"Template file {templatePath} does not exists");
     return 0;
 }
 
@@ -46,21 +46,21 @@ var version = arguments[3];
 var outputPath = arguments[4];
 if (string.IsNullOrWhiteSpace(outputPath))
 {
-    logger.LogWarning("Output file is not valid");
+    logger.LogWarning($"Output file {outputPath} is not valid");
     return 0;
 }
 
 var projectName = arguments[5];
 if (string.IsNullOrWhiteSpace(projectName))
 {
-    logger.LogWarning("Project name is not valid");
+    logger.LogWarning($"Project name {projectName} is not valid");
     return 0;
 }
 
 var projectIndex = arguments[6];
 if (string.IsNullOrWhiteSpace(projectIndex))
 {
-    logger.LogWarning("Project index is not valid");
+    logger.LogWarning($"Project index {projectName} is not valid");
     return 0;
 }
 
