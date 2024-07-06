@@ -10,6 +10,7 @@ using OpenXMLSDK.Engine.Word.ReportEngine.Models;
 using OpenXMLSDK.Engine.Word.ReportEngine.Models.ExtendedModels;
 using OpenXMLSDK.Engine.Word.Tables;
 using OpenXMLSDK.Engine.Word.Tables.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -556,19 +557,24 @@ namespace MarkdownToDocxGenerator
                     ChildElements = new List<BaseElement>()
                 };
 
-                if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
-                {
-                    var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
-                    label.Underline = new UnderlineModel
-                    {
-                        Color = "40A6DB",
-                        Val = UnderlineValues.Single
-                    };
-                    hyperlink.Text = label;
-                }
+                if (!Uri.IsWellFormedUriString(containerBlock.Url, UriKind.Absolute))
+                    logger.LogInformation($"{containerBlock.Url} is not a valid uri");
                 else
                 {
-                    logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                    if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
+                    {
+                        var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
+                        label.Underline = new UnderlineModel
+                        {
+                            Color = "40A6DB",
+                            Val = UnderlineValues.Single
+                        };
+                        hyperlink.Text = label;
+                    }
+                    else
+                    {
+                        logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                    }
                 }
                 return hyperlink;
             }
