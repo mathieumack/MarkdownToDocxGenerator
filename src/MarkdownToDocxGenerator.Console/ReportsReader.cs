@@ -44,7 +44,8 @@ internal static class ReportsReader
         {
             logger.LogInformation($"{orderFilePath} not founded");
 
-            foreach (var filePath in Directory.GetFiles(folder, "*.md"))
+            var files = Directory.GetFiles(folder, "*.md");
+            foreach (var filePath in files.OrderBy(e => e))
             {
                 logger.LogInformation($"Check file {Path.Combine(folder, filePath)}");
 
