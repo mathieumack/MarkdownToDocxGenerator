@@ -59,7 +59,10 @@ namespace MarkdownToDocxGenerator
                 AddPageBreak = true
             };
 
-            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions()
+                                                        .UseSoftlineBreakAsHardlineBreak()
+                                                        .Build();
+
             var mdDocument = Markdown.Parse(fileContent, pipeline);
             var currentPage = new Page();
 
@@ -173,7 +176,19 @@ namespace MarkdownToDocxGenerator
         {
             var result = new List<Paragraph>();
 
-            foreach (var line in block.Lines)
+            var texts = new List<string>();
+            foreach (var line in block.Lines.Lines)
+            {
+                texts.Add(line.ToString());
+            }
+
+            // Clean empty lines a start or end of list :
+            while (texts.Count > 0 && string.IsNullOrWhiteSpace(texts[0]))
+                texts.RemoveAt(0);
+            while (texts.Count > 0 && string.IsNullOrWhiteSpace(texts[texts.Count - 1]))
+                texts.RemoveAt(texts.Count - 1);
+
+            foreach (var text in texts)
             {
                 var paragraph = new Paragraph()
                 {
@@ -184,7 +199,7 @@ namespace MarkdownToDocxGenerator
                     {
                         new Label()
                         {
-                            Text = line.ToString(),
+                            Text = text,
                             FontSize = "20",
                             SpaceProcessingModeValue = SpaceProcessingModeValues.Preserve
                         }
