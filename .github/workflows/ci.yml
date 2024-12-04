@@ -17,10 +17,10 @@ jobs:
   dotnet:
     uses: mathieumack/MyGithubActions/.github/workflows/dotnetlib.yml@main
     with:
-      publishToNuget: ${{ github.event.inputs.publishToNuget == 'true' }}
+      publishToNuget: ${{ github.event.inputs.publishToNuget == true }}
+      dotnet-version: |
+        8.0.x
+        9.0.x
     secrets:
       NUGETPACKAGEIDENTIFIER: ${{ secrets.NUGETPACKAGEIDENTIFIER }}
-      SONAR_ORGANIZATION_CODE: ${{ secrets.SONAR_ORGANIZATION_CODE }}
-      SONAR_PROJECT_CODE: ${{ secrets.SONAR_PROJECT_CODE }}
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       NUGETAPIKEY: ${{ secrets.NUGETAPIKEY }}

@@ -65,7 +65,7 @@ if (string.IsNullOrWhiteSpace(projectIndex))
 }
 
 // Launch transformation :
-var parser = serviceProvider.GetService<MdToOxmlEngine>();
+var parser = serviceProvider.GetRequiredService<MdToOxmlEngine>();
 var reports = ReportsReader.GetReports(rootFolder, rootFolder, parser, logger);
 
 var culture = new CultureInfo("en-US");
