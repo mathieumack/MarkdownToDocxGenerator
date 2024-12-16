@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OpenXMLSDK.Engine.Word;
 using System.Globalization;
 using MarkdownToDocxGenerator.Console;
+using OpenXMLSDK.Engine.Word.Bookmarks;
 
 // Init Service collection :
 var serviceCollection = new ServiceCollection();
@@ -65,7 +66,7 @@ if (string.IsNullOrWhiteSpace(projectIndex))
 }
 
 // Launch transformation :
-var parser = serviceProvider.GetService<MdToOxmlEngine>();
+var parser = serviceProvider.GetRequiredService<MdToOxmlEngine>();
 var reports = ReportsReader.GetReports(rootFolder, rootFolder, parser, logger);
 
 var culture = new CultureInfo("en-US");

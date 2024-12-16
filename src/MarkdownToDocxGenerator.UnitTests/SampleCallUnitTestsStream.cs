@@ -12,11 +12,12 @@ namespace MarkdownToDocxGenerator.UnitTests
         /// You can use it as it in order to test the library with your own data.
         /// </summary>
         [TestMethod]
-        public void TransformWithFiles()
+        [DataRow("", DisplayName = "Transform from empty document")]
+        [DataRow("Dotx/sample.dotx", DisplayName = "Transform with template sample.dotx")]
+        public void TransformWithFiles(string templateFileName)
         {
             // Configuration of sample data :
             var rootFolder = Path.Combine(Environment.CurrentDirectory, "MdFiles");
-            var templatePath = Path.Combine(Environment.CurrentDirectory, "Dotx/sample.dotx");
             var outputPath = Path.Combine(Environment.CurrentDirectory, "Dotx/sample_file.docx");
 
             // Create Service provider :
@@ -29,11 +30,15 @@ namespace MarkdownToDocxGenerator.UnitTests
             var parser = serviceProvider.GetRequiredService<MdReportGenenerator>();
 
             // Generate Word document :
-            using var templateStream = File.OpenRead(templatePath);
-            var markdownContent = File.ReadAllText(Path.Combine(rootFolder, "1.md"));
-            var markdownContent2 = File.ReadAllText(Path.Combine(rootFolder, "1.md"));
-
-            parser.Transform(outputPath, rootFolder, templatePath);
+            if (string.IsNullOrWhiteSpace(templateFileName))
+            {
+                parser.Transform(outputPath, rootFolder);
+            }
+            else
+            {
+                var templatePath = Path.Combine(Environment.CurrentDirectory, templateFileName);
+                parser.Transform(outputPath, rootFolder, templatePath);
+            }
         }
 
         /// <summary>
@@ -41,11 +46,12 @@ namespace MarkdownToDocxGenerator.UnitTests
         /// You can use it as it in order to test the library with your own data.
         /// </summary>
         [TestMethod]
-        public void TransformWithStream()
+        [DataRow("", DisplayName = "Transform with stream from empty document")]
+        [DataRow("Dotx/sample.dotx", DisplayName = "Transform with stream with template sample.dotx")]
+        public void TransformWithStream(string templateFileName)
         {
             // Configuration of sample data :
             var rootFolder = Path.Combine(Environment.CurrentDirectory, "MdFiles");
-            var templatePath = Path.Combine(Environment.CurrentDirectory, "Dotx/sample.dotx");
             var outputPath = Path.Combine(Environment.CurrentDirectory, "Dotx/sample_stream.docx");
 
             // Create Service provider :
@@ -58,14 +64,25 @@ namespace MarkdownToDocxGenerator.UnitTests
             var parser = serviceProvider.GetRequiredService<MdReportGenenerator>();
 
             // Generate Word document :
-            using var templateStream = File.OpenRead(templatePath);
-            var markdownContent = File.ReadAllText(Path.Combine(rootFolder, "0.md"));
-            //var markdownContent2 = File.ReadAllText(Path.Combine(rootFolder, "1.md"));
+            // Generate Word document :
+            if (string.IsNullOrWhiteSpace(templateFileName))
+            {
+                var markdownContent = File.ReadAllText(Path.Combine(rootFolder, "0.md"));
+                using var result = parser.TransformWithStream(new List<string>() { markdownContent });
 
-            using var result = parser.TransformWithStream(new List<string>() { markdownContent }, templateStream);
+                using var file = File.OpenWrite(outputPath);
+                result.CopyTo(file);
+            }
+            else
+            {
+                var templatePath = Path.Combine(Environment.CurrentDirectory, "Dotx/sample.dotx");
+                using var templateStream = File.OpenRead(templatePath);
+                var markdownContent = File.ReadAllText(Path.Combine(rootFolder, "0.md"));
+                using var result = parser.TransformWithStream(new List<string>() { markdownContent }, templateStream);
 
-            using var file = File.OpenWrite(outputPath);
-            result.CopyTo(file);
+                using var file = File.OpenWrite(outputPath);
+                result.CopyTo(file);
+            }
         }
     }
 }

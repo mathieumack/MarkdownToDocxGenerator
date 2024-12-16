@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DocumentFormat.OpenXml.Packaging;
+using Microsoft.Extensions.Logging;
 using OpenXMLSDK.Engine.Word;
 using OpenXMLSDK.Engine.Word.ReportEngine;
 using System;
@@ -49,8 +50,10 @@ namespace MarkdownToDocxGenerator
 
             using (var word = new WordManager())
             {
-                if(!string.IsNullOrWhiteSpace(templatePath))
+                if (!string.IsNullOrWhiteSpace(templatePath))
                     word.OpenDocFromTemplate(templatePath, outputPath, true);
+                else
+                    word.New();
 
                 // Pre hook :
                 preHook?.Invoke(word);
@@ -94,6 +97,8 @@ namespace MarkdownToDocxGenerator
             {
                 if (templateDocument != null && templateDocument != Stream.Null)
                     word.OpenDocFromTemplate(templateDocument);
+                else
+                    word.New();
 
                 // Pre hook :
                 preHook?.Invoke(word);
