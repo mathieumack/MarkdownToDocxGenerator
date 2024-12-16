@@ -27,6 +27,6 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
-		<PackageReference Include="OpenXMLSDK.Engine" Version="2022.10311.0" />
+		<PackageReference Include="OpenXMLSDK.Engine" Version="2022.10312.0-preview-041" />
 	</ItemGroup>
 </Project>

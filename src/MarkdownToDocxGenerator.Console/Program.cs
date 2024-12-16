@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OpenXMLSDK.Engine.Word;
 using System.Globalization;
 using MarkdownToDocxGenerator.Console;
+using OpenXMLSDK.Engine.Word.Bookmarks;
 
 // Init Service collection :
 var serviceCollection = new ServiceCollection();
