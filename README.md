@@ -132,7 +132,6 @@ reportGenerator.Transform(
 ## Testing & Samples
 
 - Check the unit tests in the repository for real-world usage and edge cases.
-- More samples and advanced scenarios are available in the [Wiki](https://github.com/mathieumack/MarkdownToDocxGenerator/wiki).
 
 ---
 
