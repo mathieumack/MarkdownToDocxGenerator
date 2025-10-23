@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenXMLSDK.Engine" Version="2022.10313.0-preview-044" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MarkdownToDocxGenerator\MarkdownToDocxGenerator.csproj" />
   </ItemGroup>
 
