@@ -45,7 +45,7 @@ public static class ReportsReader
         }
         else
         {
-            logger.LogInformation($"{orderFilePath} not founded");
+            logger.LogInformation("{orderFilePath} not founded", orderFilePath);
 
             var files = Directory.GetFiles(folder, "*.md");
             foreach (var filePath in files.OrderBy(e => e))

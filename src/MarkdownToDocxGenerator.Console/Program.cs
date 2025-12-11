@@ -21,24 +21,24 @@ logger.LogInformation("Start processing the report.");
 var arguments = Environment.GetCommandLineArgs();
 
 // Check argumens :
-logger.LogInformation($"Arguments ({arguments.Length}) : {string.Join(',', arguments)}");
+logger.LogInformation("Arguments ({argumentsLength}) : {arguments}", arguments.Length, string.Join(',', arguments));
 
 if (arguments.Length != 7)
 {
-    logger.LogWarning($"Missing parameters : {arguments.Length} sent");
+    logger.LogWarning("Missing parameters : {argumentsLength} sent", arguments.Length);
     return 0;
 }
 
 var rootFolder = arguments[1];
 if (!Directory.Exists(rootFolder))
 {
-    logger.LogWarning($"Document folder {rootFolder} does not exists");
+    logger.LogWarning("Document folder {rootFolder} does not exists", rootFolder);
     return 0;
 }
 var templatePath = arguments[2];
 if (!File.Exists(templatePath))
 {
-    logger.LogWarning($"Template file {templatePath} does not exists");
+    logger.LogWarning("Template file {templatePath} does not exists", templatePath);
     return 0;
 }
 
@@ -47,21 +47,21 @@ var version = arguments[3];
 var outputPath = arguments[4];
 if (string.IsNullOrWhiteSpace(outputPath))
 {
-    logger.LogWarning($"Output file {outputPath} is not valid");
+    logger.LogWarning("Output file {outputPath} is not valid", outputPath);
     return 0;
 }
 
 var projectName = arguments[5];
 if (string.IsNullOrWhiteSpace(projectName))
 {
-    logger.LogWarning($"Project name {projectName} is not valid");
+    logger.LogWarning("Project name {projectName} is not valid", projectName);
     return 0;
 }
 
 var projectIndex = arguments[6];
 if (string.IsNullOrWhiteSpace(projectIndex))
 {
-    logger.LogWarning($"Project index {projectName} is not valid");
+    logger.LogWarning("Project index {projectIndex} is not valid", projectIndex);
     return 0;
 }
 
@@ -85,7 +85,7 @@ using (var word = new WordManager())
     // Append documentation :
     word.AppendSubDocument(reports, true, culture);
 
-    logger.LogInformation($"Save file {outputPath}");
+    logger.LogInformation("Save file {outputPath}", outputPath);
 
     word.SaveDoc();
     word.CloseDoc();
