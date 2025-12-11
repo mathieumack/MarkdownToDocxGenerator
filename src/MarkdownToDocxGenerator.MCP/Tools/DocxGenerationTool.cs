@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MarkdownToDocxGenerator.Helpers;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using OpenXMLSDK.Engine.Word;
 using OpenXMLSDK.Engine.Word.Bookmarks;
@@ -13,16 +14,21 @@ public class DocxGenerationTool
     [McpServerTool, Description("Generate a DOCX document from Markdown.")]
     public static string GenerateDocx(MdToOxmlEngine parser, 
                                         ILogger<DocxGenerationTool> logger,
-                                        [Description("Local dotx full document template file path (absolute file path)")] string dotxTemplateFile,
-                                        [Description("Local root full folder path that contains all markdown files (absolute file path)")]string rootFolder)
+                                        [Description("Dotx full document template file path (absolute file path)")] string dotxTemplateFile,
+                                        [Description("Root full folder path that contains all markdown files (absolute file path)")]string rootFolder)
     {
+        if (!File.Exists(dotxTemplateFile))
+            return "The template does not exists, check dotx file path.";
+        if (!Directory.Exists(rootFolder))
+            return "Root folder does not exists, check that folder exists and contains some md files.";
+
         var reports = ReportsReader.GetReports(rootFolder, rootFolder, parser, logger);
 
         var culture = new CultureInfo("en-US");
 
         using (var word = new WordManager())
         {
-            var outputPath = dotxTemplateFile.Replace(".dotx", ".docx");
+            var outputPath = Path.ChangeExtension(dotxTemplateFile, "docx");
             word.OpenDocFromTemplate(dotxTemplateFile, outputPath, true);
 
             // Fill context :
