@@ -127,7 +127,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation("Block {blockTypeFullName} unknow. I don't know how to transform it", blockType.FullName);
+                    logger.LogInformation("Block {blockTypeFullName} unknown. I don't know how to transform it", blockType.FullName);
                 }
             }
 
@@ -294,7 +294,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation("ContainerInline {blockType} unknow. I don't know how to transform it", blockType);
+                    logger.LogInformation("ContainerInline {blockType} unknown. I don't know how to transform it", blockType);
                 }
             }
 
@@ -409,7 +409,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation("table cell of type {tableCellType} unknow", e.GetType());
+                    logger.LogInformation("table cell of type {tableCellType} unknown", e.GetType());
                     e = null;
                 }
             }
@@ -588,7 +588,7 @@ namespace MarkdownToDocxGenerator
                     }
                     else
                     {
-                        logger.LogInformation("{containerBlockFirstChildType} unknow. I don't know how to transform it as hyperlink", containerBlock.FirstChild.GetType());
+                        logger.LogInformation("{containerBlockFirstChildType} unknown. I don't know how to transform it as hyperlink", containerBlock.FirstChild.GetType());
                     }
                 }
                 return hyperlink;

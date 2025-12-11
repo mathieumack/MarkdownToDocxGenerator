@@ -37,7 +37,7 @@ public class DocxGenerationTool
             // Append documentation :
             word.AppendSubDocument(reports, true, culture);
 
-            logger.LogInformation($"Save file {outputPath}");
+            logger.LogInformation("Save file {outputPath}", outputPath);
 
             word.SaveDoc();
             word.CloseDoc();
