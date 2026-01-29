@@ -9,7 +9,7 @@ public static class ServiceBuilderExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="asSingleton">True = Register as singleton. False = Register as Transiant</param>
-    public static void RegisterMarkdownToDocxGenerator(this IServiceCollection services, bool asSingleton)
+    public static IServiceCollection RegisterMarkdownToDocxGenerator(this IServiceCollection services, bool asSingleton)
     {
         if (asSingleton)
         {
@@ -21,5 +21,7 @@ public static class ServiceBuilderExtensions
             services.AddTransient<MdToOxmlEngine>();
             services.AddTransient<MdReportGenenerator>();
         }
+
+        return services;
     }
 }

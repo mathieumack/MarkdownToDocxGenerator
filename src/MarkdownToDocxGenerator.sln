@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.32112.339
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11205.157 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{DF35D5BB-6544-4719-BA72-5AB3986A9C3F}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkdownToDocxGenerator.UnitTests", "MarkdownToDocxGenerator.UnitTests\MarkdownToDocxGenerator.UnitTests.csproj", "{C61BBAE5-33EF-487B-9F4A-589FBED124CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownToDocxGenerator.Console", "MarkdownToDocxGenerator.Console\MarkdownToDocxGenerator.Console.csproj", "{6AC74803-AFFB-4446-81C7-AA4343247029}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "mcp", "mcp", "{7CE703DB-65B4-4C82-9AAB-93C79866760E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkdownToDocxGenerator.MCP", "MarkdownToDocxGenerator.MCP\MarkdownToDocxGenerator.MCP.csproj", "{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,10 @@ Global
 		{6AC74803-AFFB-4446-81C7-AA4343247029}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AC74803-AFFB-4446-81C7-AA4343247029}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AC74803-AFFB-4446-81C7-AA4343247029}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +47,7 @@ Global
 		{D3F625A4-B577-4B40-A2B7-084FF8CAC924} = {DF35D5BB-6544-4719-BA72-5AB3986A9C3F}
 		{C61BBAE5-33EF-487B-9F4A-589FBED124CE} = {469521A2-D12C-467D-B324-C5EF1F6FF85D}
 		{6AC74803-AFFB-4446-81C7-AA4343247029} = {469521A2-D12C-467D-B324-C5EF1F6FF85D}
+		{CE0FA4F2-4253-4AF7-ACEF-39D6DBA04EE5} = {7CE703DB-65B4-4C82-9AAB-93C79866760E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F924D346-1498-4E75-9A21-1CAC84F44B13}

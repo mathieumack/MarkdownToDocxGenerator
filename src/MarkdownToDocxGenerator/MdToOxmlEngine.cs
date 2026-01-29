@@ -127,7 +127,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation($"Block {blockType.FullName} unknow. I don't know how to transform it");
+                    logger.LogInformation("Block {blockTypeFullName} unknown. I don't know how to transform it", blockType.FullName);
                 }
             }
 
@@ -294,7 +294,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation($"ContainerInline {blockType} unknow. I don't know how to transform it");
+                    logger.LogInformation("ContainerInline {blockType} unknown. I don't know how to transform it", blockType);
                 }
             }
 
@@ -409,7 +409,7 @@ namespace MarkdownToDocxGenerator
                 }
                 else
                 {
-                    logger.LogInformation($"table cell of type {e.GetType()} unknow");
+                    logger.LogInformation("table cell of type {tableCellType} unknown", e.GetType());
                     e = null;
                 }
             }
@@ -573,7 +573,7 @@ namespace MarkdownToDocxGenerator
                 };
 
                 if (!Uri.IsWellFormedUriString(containerBlock.Url, UriKind.Absolute))
-                    logger.LogInformation($"{containerBlock.Url} is not a valid uri");
+                    logger.LogInformation("{containerBlockUrl} is not a valid uri", containerBlock.Url);
                 else
                 {
                     if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
@@ -588,7 +588,7 @@ namespace MarkdownToDocxGenerator
                     }
                     else
                     {
-                        logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
+                        logger.LogInformation("{containerBlockFirstChildType} unknown. I don't know how to transform it as hyperlink", containerBlock.FirstChild.GetType());
                     }
                 }
                 return hyperlink;
