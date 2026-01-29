@@ -29,7 +29,7 @@
 
 ### Prerequisites
 
-- **.NET Requirements**: .NET Standard 2.0+ / .NET 8+ / .NET 9+ / .NET 10+
+- **.NET Requirements**: .NET Standard 2.0+, .NET 9+, .NET 10+
 - **Linux/Containers**: Install `libgdiplus` for DOCX/image processing
 
 ### Installation
@@ -160,7 +160,7 @@ reportGenerator.Transform(
 - **📝 Consistency**: Use templates to ensure uniform formatting across all documents
 - **🔄 Automation**: Integrate into CI/CD pipelines for automatic documentation updates
 - **🧪 Testable**: Unit tests included - see the test project for real-world examples
-- **🛡️ Code Quality**: Built with CodeQL security analysis for safe, reliable code
+- **🛡️ Well-Tested**: Comprehensive unit tests ensure reliability and code quality
 
 ### Real-World Use Cases
 
