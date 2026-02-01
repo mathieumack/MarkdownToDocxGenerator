@@ -1,0 +1,37 @@
+name: Generate Documentation on Push
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'templates/**'
+
+jobs:
+  generate-documentation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate DOCX from Markdown
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/docs:/markdown \
+            -v ${{ github.workspace }}/templates:/templates \
+            -v ${{ github.workspace }}/output:/output \
+            ghcr.io/mathieumack/markdowntodocxgenerator:latest \
+            /markdown \
+            /templates/template.dotx \
+            "${{ github.sha }}" \
+            /output/documentation.docx \
+            "${{ github.repository }}" \
+            "${{ github.run_number }}"
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: output/documentation.docx
+          retention-days: 30

@@ -1,0 +1,42 @@
+name: Generate Documentation on Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  generate-and-upload-documentation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create output directory
+        run: mkdir -p output
+
+      - name: Generate DOCX from Markdown
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/docs:/markdown \
+            -v ${{ github.workspace }}/templates:/templates \
+            -v ${{ github.workspace }}/output:/output \
+            ghcr.io/mathieumack/markdowntodocxgenerator:latest \
+            /markdown \
+            /templates/template.dotx \
+            "${{ github.event.release.tag_name }}" \
+            /output/documentation-${{ github.event.release.tag_name }}.docx \
+            "${{ github.repository }}" \
+            "${{ github.event.release.tag_name }}"
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./output/documentation-${{ github.event.release.tag_name }}.docx
+          asset_name: documentation-${{ github.event.release.tag_name }}.docx
+          asset_content_type: application/vnd.openxmlformats-officedocument.wordprocessingml.document

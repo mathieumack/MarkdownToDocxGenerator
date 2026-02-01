@@ -1,0 +1,9 @@
+services:
+  converter:
+    image: ghcr.io/mathieumack/markdowntodocxgenerator:latest
+    volumes:
+      - ./markdown:/markdown
+      - ./templates:/templates
+      - ./output:/output
+    # The command will be specified when running docker-compose
+    # Example: docker-compose run --rm converter /markdown /templates/template.dotx "1.0.0" /output/document.docx "My Project" "PROJECT-001"

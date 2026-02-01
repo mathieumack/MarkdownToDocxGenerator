@@ -1,0 +1,48 @@
+name: Generate Documentation with Artifacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to embed in the document'
+        required: true
+        default: '1.0.0'
+      project_name:
+        description: 'Project name'
+        required: true
+        default: 'My Project'
+
+jobs:
+  generate-documentation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create output directory
+        run: mkdir -p output
+
+      - name: Generate DOCX from Markdown
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/docs:/markdown \
+            -v ${{ github.workspace }}/templates:/templates \
+            -v ${{ github.workspace }}/output:/output \
+            ghcr.io/mathieumack/markdowntodocxgenerator:latest \
+            /markdown \
+            /templates/template.dotx \
+            "${{ github.event.inputs.version }}" \
+            /output/documentation.docx \
+            "${{ github.event.inputs.project_name }}" \
+            "DOC-${{ github.run_number }}"
+
+      - name: List generated files
+        run: ls -lh output/
+
+      - name: Upload documentation as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-${{ github.event.inputs.version }}
+          path: output/documentation.docx
+          retention-days: 90

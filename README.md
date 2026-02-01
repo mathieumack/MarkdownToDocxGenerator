@@ -264,6 +264,12 @@ The Docker image is automatically built and published for:
 - `v*`: Semantic version tags (e.g., `v1.0.0`, `v1.1.0`)
 - `sha-*`: Specific commit SHA tags
 
+### More Examples
+
+For more detailed examples and integration patterns, see the [examples directory](./examples):
+- [Docker Compose examples](./examples/docker-compose) - Local development and testing
+- [GitHub Actions examples](./examples/github-actions) - CI/CD integration patterns
+
 ---
 
 ## 🎯 What You Get
