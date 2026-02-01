@@ -2,6 +2,7 @@
 # MarkdownToDocxGenerator
 
 [![.NET](https://github.com/mathieumack/MarkdownToDocxGenerator/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieumack/MarkdownToDocxGenerator/actions/workflows/ci.yml)
+[![Docker](https://github.com/mathieumack/MarkdownToDocxGenerator/actions/workflows/docker.yml/badge.svg)](https://github.com/mathieumack/MarkdownToDocxGenerator/actions/workflows/docker.yml)
 ![NuGet Version](https://img.shields.io/nuget/v/MarkdownToDocxGenerator)
 
 > **Transform your Markdown documentation into professional Word documents effortlessly.**  
@@ -149,6 +150,119 @@ reportGenerator.Transform(
     postHook: word => { /* finalize document */ }
 );
 ```
+
+---
+
+## 🐳 Docker Usage
+
+### Using the Pre-built Docker Image
+
+The easiest way to use MarkdownToDocxGenerator is via the official Docker image hosted on GitHub Container Registry:
+
+```bash
+docker pull ghcr.io/mathieumack/markdowntodocxgenerator:latest
+```
+
+### Running the Docker Container
+
+The Docker container runs the console application that converts Markdown files to DOCX. It requires the following arguments:
+
+1. **rootFolder**: Path to the folder containing Markdown files (inside container)
+2. **templatePath**: Path to the `.dotx` template file (inside container)
+3. **version**: Version string to embed in the document
+4. **outputPath**: Path where the output DOCX will be saved (inside container)
+5. **projectName**: Name of the project
+6. **projectIndex**: Project index identifier
+
+#### Basic Example
+
+```bash
+docker run --rm \
+  -v /path/to/markdown:/markdown \
+  -v /path/to/template:/template \
+  -v /path/to/output:/output \
+  ghcr.io/mathieumack/markdowntodocxgenerator:latest \
+  /markdown \
+  /template/template.dotx \
+  "1.0.0" \
+  /output/document.docx \
+  "My Project" \
+  "PROJECT-001"
+```
+
+This command:
+- Mounts your local markdown folder to `/markdown` in the container
+- Mounts your template directory to `/template` in the container
+- Mounts your output directory to `/output` in the container
+- Generates a DOCX file at `/output/document.docx`
+
+#### GitHub Actions Integration
+
+Use the Docker image in your GitHub Actions workflows:
+
+```yaml
+name: Generate Documentation
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate DOCX from Markdown
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}/docs:/markdown \
+            -v ${{ github.workspace }}/templates:/template \
+            -v ${{ github.workspace }}/output:/output \
+            ghcr.io/mathieumack/markdowntodocxgenerator:latest \
+            /markdown \
+            /template/template.dotx \
+            "${{ github.ref_name }}" \
+            /output/documentation.docx \
+            "${{ github.repository }}" \
+            "${{ github.run_number }}"
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: output/documentation.docx
+```
+
+### Building Your Own Docker Image
+
+If you want to build the Docker image locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/mathieumack/MarkdownToDocxGenerator.git
+cd MarkdownToDocxGenerator
+
+# Build the Docker image
+docker build -t markdowntodocxgenerator:local .
+
+# Run your local image
+docker run --rm \
+  -v /path/to/markdown:/markdown \
+  -v /path/to/template:/template \
+  -v /path/to/output:/output \
+  markdowntodocxgenerator:local \
+  /markdown /template/template.dotx "1.0.0" /output/document.docx "My Project" "PROJECT-001"
+```
+
+### Docker Image Tags
+
+The Docker image is automatically built and published for:
+- `latest`: Latest build from the main branch
+- `main`: Latest build from the main branch
+- `v*`: Semantic version tags (e.g., `v1.0.0`, `v1.1.0`)
+- `sha-*`: Specific commit SHA tags
 
 ---
 
