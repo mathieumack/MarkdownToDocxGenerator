@@ -247,8 +247,23 @@ namespace MarkdownToDocxGenerator
                     var mdEmphasisInline = (EmphasisInline)inlineBlock;
                     foreach (var subBlock in mdEmphasisInline)
                     {
-                        var label = GetLiteralInlineText((LiteralInline)subBlock, mdEmphasisInline.DelimiterChar == '*' && mdEmphasisInline.DelimiterCount == 2);
-                        paragraph.ChildElements.Add(label);
+                        var subBlockType = subBlock.GetType();
+                        if (subBlockType == typeof(LiteralInline))
+                        {
+                            var label = GetLiteralInlineText((LiteralInline)subBlock, mdEmphasisInline.DelimiterChar == '*' && mdEmphasisInline.DelimiterCount == 2);
+                            paragraph.ChildElements.Add(label);
+                        }
+                        else if (subBlockType == typeof(LinkInline))
+                        {
+                            var mdLinkInline = (LinkInline)subBlock;
+                            var hyperlink = GetLinkInlineText(mdLinkInline);
+                            if (hyperlink != null)
+                                paragraph.ChildElements.Add(hyperlink);
+                        }
+                        else
+                        {
+                            logger.LogInformation($"EmphasisInline sub-element {subBlockType} unknown. Skipping.");
+                        }
                     }
                 }
                 else if (blockType == typeof(LinkInline))
@@ -566,31 +581,39 @@ namespace MarkdownToDocxGenerator
             }
             else
             {
+                if (!Uri.IsWellFormedUriString(containerBlock.Url, UriKind.Absolute))
+                {
+                    logger.LogInformation($"{containerBlock.Url} is not a valid uri");
+
+                    // Return the link text as a simple label instead of a hyperlink
+                    if (containerBlock.FirstChild != null && containerBlock.FirstChild.GetType() == typeof(LiteralInline))
+                    {
+                        return GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
+                    }
+                    return null;
+                }
+
                 var hyperlink = new Hyperlink()
                 {
                     WebSiteUri = containerBlock.Url,
                     ChildElements = new List<BaseElement>()
                 };
 
-                if (!Uri.IsWellFormedUriString(containerBlock.Url, UriKind.Absolute))
-                    logger.LogInformation($"{containerBlock.Url} is not a valid uri");
+                if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
+                {
+                    var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
+                    label.Underline = new UnderlineModel
+                    {
+                        Color = "40A6DB",
+                        Val = UnderlineValues.Single
+                    };
+                    hyperlink.Text = label;
+                }
                 else
                 {
-                    if (containerBlock.FirstChild.GetType() == typeof(LiteralInline))
-                    {
-                        var label = GetLiteralInlineText((LiteralInline)containerBlock.FirstChild);
-                        label.Underline = new UnderlineModel
-                        {
-                            Color = "40A6DB",
-                            Val = UnderlineValues.Single
-                        };
-                        hyperlink.Text = label;
-                    }
-                    else
-                    {
-                        logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
-                    }
+                    logger.LogInformation($"{containerBlock.FirstChild.GetType()} unknow. I don't know how to transform it as hyperlink");
                 }
+
                 return hyperlink;
             }
         }
